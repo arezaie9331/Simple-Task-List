@@ -1,0 +1,50 @@
+﻿@page "/Upsert-Item"
+@page "/Upsert-Item/{Id:int}"
+@using Tasklist.Data
+@inject NavigationManager NavigationManager
+
+@inject ITaskRepository _task
+
+
+<h1>افزودن تسک</h1>
+<div class="all-tasks">
+
+    <EditForm Model="TaskItem" OnValidSubmit="UpsertItem">
+        <ValidationSummary Model="TaskItem"></ValidationSummary>
+        <label>نام تسک:</label>
+        <InputText @bind-Value="TaskItem.Subject"></InputText>
+
+        <button type="submit" class="btn btn-success waves-effect waves-light">ثبت</button>
+
+    </EditForm>
+</div>
+
+
+@code
+{
+    [Parameter]
+    public int? Id { get; set; }
+
+    public TaskItem TaskItem { get; set; } = new TaskItem();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id!=null)
+        {
+            TaskItem = await _task.Get(Id.Value);
+        }
+        else
+        {
+            TaskItem.AddTime = DateTime.Now;
+        }
+    }
+
+    public async void UpsertItem()
+    {
+        
+        TaskItem.IsDone = false;
+        TaskItem.IsDeleted = false;
+        await _task.Add(TaskItem);
+        NavigationManager.NavigateTo("/");
+    }
+}

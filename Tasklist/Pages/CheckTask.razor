@@ -1,0 +1,36 @@
+﻿@using Tasklist.Data
+@inject ITaskRepository _task
+@code {
+    [Parameter]
+    public TaskItem TaskItem { get; set; }
+
+    [Parameter]
+    public EventCallback Checked { get; set; }
+
+    private async void CheckItem()
+    {
+        await _task.DoneItem(TaskItem.Id);
+        await Checked.InvokeAsync();
+    }
+
+    private async void UnCheckItem()
+    {
+        await _task.NotDoneItem(TaskItem.Id);
+        await Checked.InvokeAsync();
+    }
+
+}
+
+@if (TaskItem.IsDone)
+{
+    <div class="deactive-task" @onclick="UnCheckItem">
+        <img src="/icons/checked.png" alt=""><strike>@TaskItem.Subject</strike>
+    </div>
+}
+else
+{
+    <div class="task" @onclick="CheckItem">
+        <img src="/icons/unchecked.png" alt=""><h3>@TaskItem.Subject</h3>
+    </div>
+}
+

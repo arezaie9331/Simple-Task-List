@@ -1,0 +1,45 @@
+﻿@page "/"
+@using Tasklist.Data
+
+@inject ITaskRepository _task
+
+
+
+<h1>همه تسک ها</h1>
+<NavLink href="/Upsert-Item">افزودن آیتم جدید</NavLink>
+<div class="all-tasks">
+    
+
+    @if (TaskItems.Any())
+    {
+        foreach (TaskItem item in TaskItems)
+        {
+            <CheckTask TaskItem="item" Checked="CallBack"/>
+
+        }
+    }
+    else
+    {
+        <div class="task">
+            <img src="/icons/checked.png" alt=""><h3>همه تسک ها انجام شدند .</h3>
+        </div>
+    }
+
+    
+</div>
+
+
+@code
+{
+    public List<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
+    protected override async Task OnInitializedAsync()
+    {
+        TaskItems = await _task.GetAll();
+    }
+
+    private async void CallBack()
+    {
+        TaskItems = await _task.GetAll();
+        StateHasChanged();
+    }
+}
